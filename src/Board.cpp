@@ -17,9 +17,127 @@ Board::Board(const int rows, const int cols) {
     initBoard();
 }
 
-void Board::slide_and_merge_left(int* row) {
-    return;
+
+void Board::slide_cells_col(int col, Direction dir) {
+    if (dir == UP) {
+        for (int i = 0; i < rows - 1; i++) {
+            if (this->grid[i][col] == 0) {
+                for (int j = i + 1; j < rows; j++) {
+                    if (this->grid[j][col] != 0) {
+                        this->grid[i][col] = this->grid[j][col];
+                        this->grid[j][col] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+    } else if (dir == DOWN) {
+        for (int i = rows - 1; i > 0; i--) {
+            if (this->grid[i][col] == 0) {
+                for (int j = i - 1; j >= 0; j--) {
+                    if (this->grid[j][col] != 0) {
+                        this->grid[i][col] = this->grid[j][col];
+                        this->grid[j][col] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
 }
+void Board::merge_cells_col(int col, Direction dir) {
+    if (dir == UP) {
+        for (int i = 0; i< cols - 1; i++) {
+            if (this->grid[i][col]!= 0 && this->grid[i][col] == this->grid[i + 1][col]){
+                this->grid[i][col] *= 2;
+                this->grid[i+1][col] = 0;
+                i++;
+            }
+        }
+    }else if (dir == DOWN) {
+        for (int i = cols - 1; i > 0; i--) {
+            if (this->grid[i][col] != 0 && this->grid[i][col] == this->grid[i - 1][col]) {
+                this->grid[i][col] *= 2;
+                this->grid[i - 1][col] = 0;
+                i--;
+            }
+        }
+
+    }
+}
+
+void Board::slide_cells_line(int *row, Direction dir) {
+    if (dir == LEFT) {
+        for (int i = 0; i < cols - 1; i++) {
+            if (row[i] == 0) {
+                for (int j = i + 1; j < cols; j++) {
+                    if (row[j] != 0) {
+                        row[i] = row[j];
+                        row[j] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+    }else if (dir == RIGHT) {
+        for (int i = cols - 1; i > 0; i--) {
+            if (row[i] == 0) {
+                for (int j = i - 1; j >= 0; j--) {
+                    if (row[j] != 0) {
+                        row[i] = row[j];
+                        row[j] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+void Board::merge_cells_line(int *row, Direction dir) {
+    if (dir == LEFT) {
+        for (int i = 0; i < cols - 1; i++) {
+            if (row[i] != 0 && row[i] == row[i + 1]) {
+                row[i] *= 2;
+                row[i + 1] = 0;
+                i++; // on passe la tuile suivante pour éviter un double mélange
+            }
+        }
+    } else if (dir == RIGHT) {
+        for (int i = cols - 1; i > 0; i--) {
+            if (row[i] != 0 && row[i] == row[i - 1]) {
+                row[i] *= 2;
+                row[i - 1] = 0;
+                i--; // on passe la tuile suivante pour éviter un double mélange
+            }
+        }
+    }
+}
+
+void Board::slide_and_merge_line(int *row, Direction dir) {
+    slide_cells_line(row, dir);
+    merge_cells_line(row, dir);
+    slide_cells_line(row, dir);
+}
+void Board::slide_and_merge_col(int col, Direction dir) {
+    slide_cells_col(col, dir);
+    merge_cells_col(col, dir);
+    slide_cells_col(col, dir);
+}
+
+void Board::slide_and_merge_cell(int row, int col, Direction dir) {
+    if (dir == LEFT || dir == RIGHT) {
+        slide_and_merge_line(this->grid[row], dir);
+    } else if (dir == UP || dir == DOWN) {
+        slide_and_merge_col(col, dir);
+    }
+}
+
+
+
+
+
 
 
 /**
@@ -66,21 +184,19 @@ void Board::initGrid() {
 
 void Board::initBoard() {
     initGrid();
-    generateStartGrid();
+    generateStartGrid(this->rows,this->cols,this->grid,this->PROBA_4);
 }
-//TODO : création d'un
-void Board::generateStartGrid() {
-    int i,j;
-    double p;
+
+void Board::generateStartGrid(int rows,int cols, int** grid,const float PROBA_4) {
     for (int k = 0; k < 2; k++) {
-        i = rand() % this->rows;
-        j = rand() % this->cols;
-        p = rand() % 1;
-        while (this->grid[i][j] != 0) {
-            i = rand() % this->rows;
-            j = rand() % this->cols;
+        int i = rand() % rows;
+        int j = rand() % cols;
+        double p = rand() % 1;
+        while (grid[i][j] != 0) {
+            i = rand() % rows;
+            j = rand() % cols;
         }
-        p <= PROBA_4 ? this->grid[i][j] = 4 : this->grid[i][j] = 2;
+        p <= PROBA_4 ? grid[i][j] = 4 : grid[i][j] = 2;
     }
 }
 
