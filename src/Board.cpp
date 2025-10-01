@@ -3,7 +3,7 @@
 //
 
 #include "Board.hpp"
-
+#include <cstdlib>
 
 /**
  * Constructeur de la classe Board représentant la grille de jeu
@@ -14,9 +14,11 @@
 Board::Board(const int rows, const int cols) {
     this->rows = rows;
     this->cols = cols;
-    initGrid();
+    initBoard();
+}
 
-
+void Board::slide_and_merge_left(int* row) {
+    return;
 }
 
 
@@ -25,9 +27,7 @@ Board::Board(const int rows, const int cols) {
  *
  */
 Board::~Board() {
-    for (int i = 0; i < rows; i++) {
-        this->grid[i] = nullptr; // chaque
-    }
+    for (int i = 0; i < rows; i++) this->grid[i] = nullptr; // chaque
     this->grid = nullptr;
 }
 
@@ -64,8 +64,42 @@ void Board::initGrid() {
     }
 }
 
-//TODO : initiliaser la méthode setCell(int row, int col, int value)
-//TODO : initialiser la méthode getCell(int row, int col)
+void Board::initBoard() {
+    initGrid();
+    generateStartGrid();
+}
+//TODO : création d'un
+void Board::generateStartGrid() {
+    int i,j;
+    double p;
+    for (int k = 0; k < 2; k++) {
+        i = rand() % this->rows;
+        j = rand() % this->cols;
+        p = rand() % 1;
+        while (this->grid[i][j] != 0) {
+            i = rand() % this->rows;
+            j = rand() % this->cols;
+        }
+        p <= PROBA_4 ? this->grid[i][j] = 4 : this->grid[i][j] = 2;
+    }
+}
+
+/**
+ * Setter pour assigner une valeur à une cellule spécifique de la grille
+ *
+ * @param row Coordonnée de la ligne pour la cellule
+ * @param col Coordonnée de la colonne pour la cellule
+ * @param value Valeur à assigner à la cellule
+ */
+void Board::setCell(const int row,const  int col,const int value) {
+    this->grid[row][col] = value;
+}
+
+int Board::getCell(const int row, const int col) const {
+    return this->grid[row][col];
+}
+
+
 
 
 
