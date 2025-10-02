@@ -4,6 +4,7 @@
 
 #include "Board.hpp"
 #include <cstdlib>
+#include <vector>
 
 /**
  * Constructeur de la classe Board représentant la grille de jeu
@@ -49,7 +50,7 @@ void Board::slide_cells_col(int col, Direction dir) {
 }
 void Board::merge_cells_col(int col, Direction dir) {
     if (dir == UP) {
-        for (int i = 0; i< cols - 1; i++) {
+        for (int i = 0; i< rows - 1; i++) {
             if (this->grid[i][col]!= 0 && this->grid[i][col] == this->grid[i + 1][col]){
                 this->grid[i][col] *= 2;
                 this->grid[i+1][col] = 0;
@@ -57,7 +58,7 @@ void Board::merge_cells_col(int col, Direction dir) {
             }
         }
     }else if (dir == DOWN) {
-        for (int i = cols - 1; i > 0; i--) {
+        for (int i = rows - 1; i > 0; i--) {
             if (this->grid[i][col] != 0 && this->grid[i][col] == this->grid[i - 1][col]) {
                 this->grid[i][col] *= 2;
                 this->grid[i - 1][col] = 0;
@@ -126,12 +127,40 @@ void Board::slide_and_merge_col(int col, Direction dir) {
     slide_cells_col(col, dir);
 }
 
-void Board::slide_and_merge_cell(int row, int col, Direction dir) {
-    if (dir == LEFT || dir == RIGHT) {
-        slide_and_merge_line(this->grid[row], dir);
-    } else if (dir == UP || dir == DOWN) {
-        slide_and_merge_col(col, dir);
+
+void Board::make_action(Direction dir) {
+    switch (dir) {
+        case LEFT :
+            for (int i = 0; i < rows; i++) {
+                slide_and_merge_line(this->grid[i], dir);
+            }
+            break;
+        case RIGHT :
+            for (int i = 0; i < rows; i++) {
+                slide_and_merge_line(this->grid[i], dir);
+            }
+            break;
+        case UP :
+            for (int i = 0; i < cols; i++) {
+                slide_and_merge_col(i, dir);
+            }
+            break;
+        case DOWN :
+            for (int i = 0; i < cols; i++) {
+                slide_and_merge_col(i, dir);
+            }
+            break;
+        default :
+            break;
     }
+    int nb_remaining_cells = countEmpty();
+    if (nb_remaining_cells >= 2) {
+        add_new_cell();
+        add_new_cell();
+    }else if (nb_remaining_cells == 1) {
+        add_new_cell();
+    }
+
 }
 
 
@@ -184,19 +213,41 @@ void Board::initGrid() {
 
 void Board::initBoard() {
     initGrid();
-    generateStartGrid(this->rows,this->cols,this->grid,this->PROBA_4);
+    generateStartGrid();
 }
 
-void Board::generateStartGrid(int rows,int cols, int** grid,const float PROBA_4) {
-    for (int k = 0; k < 2; k++) {
-        int i = rand() % rows;
-        int j = rand() % cols;
-        double p = rand() % 1;
-        while (grid[i][j] != 0) {
-            i = rand() % rows;
-            j = rand() % cols;
+int Board::countEmpty() const {
+    int count = 0;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (this->grid[i][j] == 0) count++;
         }
-        p <= PROBA_4 ? grid[i][j] = 4 : grid[i][j] = 2;
+    }
+    return count;
+}
+
+void Board::add_new_cell() {
+    // on récupère les pos vides
+    std::vector<std::pair<int, int>> empty_positions;
+    for (int i = 0; i< rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (grid[i][j] == 0) {
+                empty_positions.emplace_back(i, j);
+            }
+        }
+    }
+    if (empty_positions.empty()) return; // si il n'y a pas de place on ne fait rien
+
+    //maintenant on choisit aléatoirement une position et lui donne 2 ou 4
+    auto [pos_x,pos_y] = empty_positions[rand() % empty_positions.size()];
+    double p = (double)rand() / RAND_MAX;
+    p <= PROBA_4 ? this->grid[pos_x][pos_y] = 4 : this->grid[pos_x][pos_y] = 2;
+}
+
+
+void Board::generateStartGrid() {
+    for (int k = 0; k < 2; k++) {
+        add_new_cell();
     }
 }
 

@@ -7,10 +7,11 @@
 
 #endif //C_PROJETS_BOARD_HPP
 
-extern enum Direction {LEFT, RIGHT, UP, DOWN};
+enum Direction {LEFT = 0, RIGHT = 1, UP = 2, DOWN = 3};
 
 class Board {
 public:
+
     Board(int rows, int cols);
     ~Board();
     [[nodiscard]] int getRows() const;
@@ -26,7 +27,11 @@ private:
     int cols;
     int** grid{};
 
-    static void generateStartGrid(int rows, int cols, int** grid, float PROBA_4);
+
+
+    void generateStartGrid();
+    void add_new_cell();
+    [[nodiscard]] int countEmpty() const;
     void initBoard();
     void initGrid();
 
@@ -41,5 +46,6 @@ private:
 
     void slide_and_merge_cell(int row,int col,Direction dir);
 
+    void make_action(Direction dir);
 
 };
