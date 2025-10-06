@@ -20,7 +20,7 @@ Board::Board(const int rows, const int cols) {
 
 
 void Board::slide_cells_col(int col, Direction dir) {
-    if (dir == UP) {
+    if (dir == Direction::UP) {
         for (int i = 0; i < rows - 1; i++) {
             if (this->grid[i][col] == 0) {
                 for (int j = i + 1; j < rows; j++) {
@@ -32,7 +32,7 @@ void Board::slide_cells_col(int col, Direction dir) {
                 }
             }
         }
-    } else if (dir == DOWN) {
+    } else if (dir == Direction::DOWN) {
         for (int i = rows - 1; i > 0; i--) {
             if (this->grid[i][col] == 0) {
                 for (int j = i - 1; j >= 0; j--) {
@@ -49,7 +49,7 @@ void Board::slide_cells_col(int col, Direction dir) {
 
 }
 void Board::merge_cells_col(int col, Direction dir) {
-    if (dir == UP) {
+    if (dir == Direction::UP) {
         for (int i = 0; i< rows - 1; i++) {
             if (this->grid[i][col]!= 0 && this->grid[i][col] == this->grid[i + 1][col]){
                 this->grid[i][col] *= 2;
@@ -57,7 +57,7 @@ void Board::merge_cells_col(int col, Direction dir) {
                 i++;
             }
         }
-    }else if (dir == DOWN) {
+    }else if (dir == Direction::DOWN) {
         for (int i = rows - 1; i > 0; i--) {
             if (this->grid[i][col] != 0 && this->grid[i][col] == this->grid[i - 1][col]) {
                 this->grid[i][col] *= 2;
@@ -70,7 +70,7 @@ void Board::merge_cells_col(int col, Direction dir) {
 }
 
 void Board::slide_cells_line(int *row, Direction dir) {
-    if (dir == LEFT) {
+    if (dir == Direction::LEFT) {
         for (int i = 0; i < cols - 1; i++) {
             if (row[i] == 0) {
                 for (int j = i + 1; j < cols; j++) {
@@ -82,7 +82,7 @@ void Board::slide_cells_line(int *row, Direction dir) {
                 }
             }
         }
-    }else if (dir == RIGHT) {
+    }else if (dir == Direction::RIGHT) {
         for (int i = cols - 1; i > 0; i--) {
             if (row[i] == 0) {
                 for (int j = i - 1; j >= 0; j--) {
@@ -97,7 +97,7 @@ void Board::slide_cells_line(int *row, Direction dir) {
     }
 }
 void Board::merge_cells_line(int *row, Direction dir) {
-    if (dir == LEFT) {
+    if (dir == Direction::LEFT) {
         for (int i = 0; i < cols - 1; i++) {
             if (row[i] != 0 && row[i] == row[i + 1]) {
                 row[i] *= 2;
@@ -105,7 +105,7 @@ void Board::merge_cells_line(int *row, Direction dir) {
                 i++; // on passe la tuile suivante pour éviter un double mélange
             }
         }
-    } else if (dir == RIGHT) {
+    } else if (dir == Direction::RIGHT) {
         for (int i = cols - 1; i > 0; i--) {
             if (row[i] != 0 && row[i] == row[i - 1]) {
                 row[i] *= 2;
@@ -130,22 +130,22 @@ void Board::slide_and_merge_col(int col, Direction dir) {
 
 void Board::make_action(Direction dir) {
     switch (dir) {
-        case LEFT :
+        case Direction::LEFT :
             for (int i = 0; i < rows; i++) {
                 slide_and_merge_line(this->grid[i], dir);
             }
             break;
-        case RIGHT :
+        case Direction::RIGHT :
             for (int i = 0; i < rows; i++) {
                 slide_and_merge_line(this->grid[i], dir);
             }
             break;
-        case UP :
+        case Direction::UP :
             for (int i = 0; i < cols; i++) {
                 slide_and_merge_col(i, dir);
             }
             break;
-        case DOWN :
+        case Direction::DOWN :
             for (int i = 0; i < cols; i++) {
                 slide_and_merge_col(i, dir);
             }

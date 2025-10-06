@@ -5,9 +5,7 @@
 #ifndef C_PROJETS_BOARD_HPP
 #define C_PROJETS_BOARD_HPP
 
-#endif //C_PROJETS_BOARD_HPP
-
-enum Direction {LEFT = 0, RIGHT = 1, UP = 2, DOWN = 3};
+#include "Direction.hpp"
 
 class Board {
 public:
@@ -19,7 +17,7 @@ public:
     [[nodiscard]] int** getGrid() const;
     void setCell(int row, int col, int value);
     [[nodiscard]] int getCell(int row, int col) const;
-
+    void make_action(Direction dir);
 
 private:
     const float PROBA_4 = 0.1; // 10 % de chance que un 4 apparait
@@ -46,6 +44,7 @@ private:
 
     void slide_and_merge_cell(int row,int col,Direction dir);
 
-    void make_action(Direction dir);
+
 
 };
+#endif //C_PROJETS_BOARD_HPP
