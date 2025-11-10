@@ -13,9 +13,11 @@ class Game {
 public:
     Game();
     ~Game();
-    void getScore();
-    void getBestScore();
-    void getBoard();
+    int getScore();
+    int getBestScore();
+    void setScore(int score);
+    void setBestScore(int bestScore);
+    Board getBoard();
     void move(Direction direction);
 private:
     int score;

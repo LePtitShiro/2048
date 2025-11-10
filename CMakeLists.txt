@@ -15,7 +15,8 @@ add_executable(c_projets src/main.cpp
         src/Renderer.hpp
         src/Input.cpp
         src/Input.hpp
-        extern/stb_easy_font.h)
+        extern/stb_easy_font.h
+        src/Direction.hpp)
 
 # Try to find GLFW via package manager (vcpkg/Conan). If unavailable, fetch from source.
 find_package(glfw3 CONFIG QUIET)

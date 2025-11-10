@@ -10,12 +10,16 @@
 
 class App {
 public:
-    App(int width, int height) {
+    App(int width, int height) : renderer(width, height) {
         this->width = width;
         this->height = height;
-        this->renderer = Renderer(width, height);
+        this->game = new Game();
     }
-    ~App();
+
+    ~App() {
+        delete game;
+
+    }
     int run() {
         if (!glfwInit()) {
             std::cerr << "failed to init glfw" << std::endl;
@@ -38,7 +42,7 @@ public:
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
             update();
-            renderer.render(game.getBoard(),game.getScore(),game.getBestScore());
+            renderer.render(game->getBoard(),game->getScore(),game->getBestScore());
             glfwSwapBuffers(window);
         }
         glfwTerminate();
@@ -49,8 +53,8 @@ public:
 private:
     int width,height;
     GLFWwindow* window = nullptr;
-    Renderer* renderer;
-    Game game;
+    Renderer renderer;
+    Game *game;
 
 
     void onKey(int key, int action) {
@@ -60,22 +64,22 @@ private:
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
                 break;
             case GLFW_KEY_LEFT:
-                game.move(Direction::LEFT);
+                game->move(Direction::LEFT);
                 break;
             case GLFW_KEY_RIGHT:
-                game.move(Direction::RIGHT);
+                game->move(Direction::RIGHT);
                 break;
             case GLFW_KEY_UP:
-                game.move(Direction::UP);
+                game->move(Direction::UP);
                 break;
             case GLFW_KEY_DOWN:
-                game.move(Direction::DOWN);
+                game->move(Direction::DOWN);
                 break;
             default:
                 break;
         }
     }
-    void update() {
-
+    void update(){
+        
     }
 };
