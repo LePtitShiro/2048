@@ -17,12 +17,13 @@ public:
     [[nodiscard]] int** getGrid() const;
     void setCell(int row, int col, int value);
     [[nodiscard]] int getCell(int row, int col) const;
-    void make_action(Direction dir);
+    int make_action(Direction dir);
 
 private:
     const float PROBA_4 = 0.1; // 10 % de chance que un 4 apparait
     int rows;
     int cols;
+    int value_of_action = 0;
     int** grid{};
 
 
@@ -32,6 +33,7 @@ private:
     [[nodiscard]] int countEmpty() const;
     void initBoard();
     void initGrid();
+    void resetValueOfAction();
 
 
     void slide_and_merge_line(int* row,Direction dir);

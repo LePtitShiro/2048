@@ -15,6 +15,7 @@
 Board::Board(const int rows, const int cols) {
     this->rows = rows;
     this->cols = cols;
+    this->value_of_action = 0;
     initBoard();
 }
 
@@ -49,10 +50,12 @@ void Board::slide_cells_col(int col, Direction dir) {
 
 }
 void Board::merge_cells_col(int col, Direction dir) {
+    resetValueOfAction();
     if (dir == Direction::UP) {
         for (int i = 0; i< rows - 1; i++) {
             if (this->grid[i][col]!= 0 && this->grid[i][col] == this->grid[i + 1][col]){
                 this->grid[i][col] *= 2;
+                value_of_action+= this->grid[i][col];
                 this->grid[i+1][col] = 0;
                 i++;
             }
@@ -61,6 +64,7 @@ void Board::merge_cells_col(int col, Direction dir) {
         for (int i = rows - 1; i > 0; i--) {
             if (this->grid[i][col] != 0 && this->grid[i][col] == this->grid[i - 1][col]) {
                 this->grid[i][col] *= 2;
+                value_of_action+= this->grid[i][col];
                 this->grid[i - 1][col] = 0;
                 i--;
             }
@@ -97,10 +101,12 @@ void Board::slide_cells_line(int *row, Direction dir) {
     }
 }
 void Board::merge_cells_line(int *row, Direction dir) {
+    resetValueOfAction();
     if (dir == Direction::LEFT) {
         for (int i = 0; i < cols - 1; i++) {
             if (row[i] != 0 && row[i] == row[i + 1]) {
                 row[i] *= 2;
+                value_of_action += row[i];
                 row[i + 1] = 0;
                 i++; // on passe la tuile suivante pour éviter un double mélange
             }
@@ -109,6 +115,7 @@ void Board::merge_cells_line(int *row, Direction dir) {
         for (int i = cols - 1; i > 0; i--) {
             if (row[i] != 0 && row[i] == row[i - 1]) {
                 row[i] *= 2;
+                value_of_action += row[i];
                 row[i - 1] = 0;
                 i--; // on passe la tuile suivante pour éviter un double mélange
             }
@@ -128,7 +135,7 @@ void Board::slide_and_merge_col(int col, Direction dir) {
 }
 
 
-void Board::make_action(Direction dir) {
+int Board::make_action(Direction dir) {
     switch (dir) {
         case Direction::LEFT :
             for (int i = 0; i < rows; i++) {
@@ -156,6 +163,7 @@ void Board::make_action(Direction dir) {
     if (countEmpty() >= 1) {
         add_new_cell();
     }
+    return value_of_action;
 
 
 }
@@ -246,6 +254,10 @@ void Board::generateStartGrid() {
     for (int k = 0; k < 2; k++) {
         add_new_cell();
     }
+}
+
+void Board::resetValueOfAction() {
+    this->value_of_action = 0;
 }
 
 /**

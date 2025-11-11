@@ -34,17 +34,17 @@ void Game::move(const Direction direction) {
     }
 }
 
-void Game::moveDown() {this->board->make_action(Direction::DOWN);}
-void Game::moveLeft() {this->board->make_action(Direction::LEFT);}
-void Game::moveRight() {this->board->make_action(Direction::RIGHT);}
-void Game::moveUp() {this->board->make_action(Direction::UP);}
-const Board& Game::getBoard() {return *this->board;}
-int Game::getBestScore() {return this->bestScore;}
-int Game::getScore() {return this->score;}
+void Game::moveDown() {int value = this->board->make_action(Direction::DOWN); this->updateScore(value);}
+void Game::moveLeft() {int value = this->board->make_action(Direction::LEFT); this->updateScore(value);}
+void Game::moveRight() {int value = this->board->make_action(Direction::RIGHT); this->updateScore(value);}
+void Game::moveUp() {int value = this->board->make_action(Direction::UP); this->updateScore(value);}
+const Board& Game::getBoard() const {return *this->board;}
+int Game::getBestScore() const {return this->bestScore;}
+int Game::getScore() const {return this->score;}
 void Game::setScore(int score) {this->score = score;}
 void Game::setBestScore(int bestScore) {this->bestScore = bestScore;}
-void Game::updateScore() {
-    this->score += 1; //TODO: faire l'implémentation de méthode updateScore() correctement
+void Game::updateScore(int value) {
+    this->score += value;
 }
 void Game::updateBestScore() {
     int score = this->getScore();

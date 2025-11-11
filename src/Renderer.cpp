@@ -45,7 +45,9 @@ bool Renderer::init() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    shaderP = loadShaders("tile.vert", "tile.frag");
+    glDisable(GL_DEPTH_TEST);
+
+    shaderP = loadShaders("./shaders/tile.vert", "./shaders/tile.frag");
     if (shaderP == 0) {
         fprintf(stderr, "Failed to load shaders\n");
         return false;
@@ -63,7 +65,7 @@ bool Renderer::init() {
         1.0f, 0.0f  // BD
     };
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO); // Nous avons besoin d'un VBO maintenant
+    glGenBuffers(1, &VBO);
 
     glBindVertexArray(VAO);
 
@@ -77,6 +79,11 @@ bool Renderer::init() {
     glBindVertexArray(0);
 
     glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+
+    // partie texte
+
+
+
 
     return true;
 
@@ -116,35 +123,40 @@ void Renderer::render(const Board& board, int score, int bestScore) {
         }
     }
     glBindVertexArray(0);
-}
+    glUseProgram(0);
 
-void Renderer::clearScreen(const Board& board) {
-    int rows = board.getRows();
-    int cols = board.getCols();
-    std::vector<glm::vec3> vert;
-    std::vector<glm::uvec3> ind;
-    for (int i = 0; i<rows;i++) {
-        for (int j = 0; j < cols; j++) {
-            GLfloat cellHeight = this->height / rows;
-            GLfloat cellWidth = this->width / cols;
-            vert.emplace_back( cellHeight * 2 - 1, cellWidth * 2 - 1, 0.0f);
+    std::stringstream ss_score;
+    ss_score << "Score: " << std::to_string(score);
+    std::stringstream ss_best_score;
+    ss_best_score << "Best Score: " << std::to_string(bestScore);
+
+    glm::vec3 colortext = glm::vec3(0.2f, 0.2f, 0.2f);
+    renderText(ss_score.str(), 20.0f, 20.0f, 4.0f, colortext);
+    renderText(ss_best_score.str(), 200.0f, 20.0f, 4.0f, colortext);
+
+
+    cellHeight = static_cast<float>(this->height) / board.getRows();
+    cellWidth = static_cast<float>(this->width) / board.getCols();
+
+    for (int i = 0; i < board.getRows(); i++) {
+        for (int j = 0; j < board.getCols(); j++) {
+            int value = board.getCell(i, j);
+            if (value > 0) {
+                std::string s_val = std::to_string(value);
+
+                // Centrer le texte
+                float textWidth = stb_easy_font_width((char*)s_val.c_str()) * 3.0f; // scale 3
+                float textHeight = stb_easy_font_height((char*)s_val.c_str()) * 3.0f;
+
+                float xPos = (j * cellWidth) + (cellWidth / 2.0f) - (textWidth / 2.0f);
+                float yPos = (i * cellHeight) + (cellHeight / 2.0f) - (textHeight / 2.0f);
+
+                renderText(s_val, xPos, yPos, 3.0f, colortext);
+            }
         }
     }
 
-    for (int i = 0; i<rows -1;i++) {
-        for (int j = 0; j < cols -1; j++) {
-            int rowStart = i * cols + j;
-            int rowNext = (i + 1) * (cols + 1);
-            ind.emplace_back(rowStart + i, rowStart + i + 1, rowNext + i);
-            ind.emplace_back(rowStart + i, rowStart + i + 1, rowNext + i);
-        }
-    }
-    GLuint length = ind.size() * 3;
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, length, GL_UNSIGNED_INT, NULL);
-
 }
-
 
 GLuint Renderer::loadShaders(const char* vertex_path, const char* fragment_path) {
     std::string vertexCode;
@@ -179,21 +191,21 @@ GLuint Renderer::loadShaders(const char* vertex_path, const char* fragment_path)
 
     // Vertex Shader
     vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vShaderCode, NULL);
+    glShaderSource(vertex, 1, &vShaderCode, nullptr);
     glCompileShader(vertex);
     glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+        glGetShaderInfoLog(vertex, 512, nullptr, infoLog);
         std::cerr << "ERREUR::SHADER::VERTEX::COMPILATION_ECHOUEE\n" << infoLog << std::endl;
     }
 
     // Fragment Shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fShaderCode, NULL);
+    glShaderSource(fragment, 1, &fShaderCode, nullptr);
     glCompileShader(fragment);
     glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(fragment, 512, NULL, infoLog);
+        glGetShaderInfoLog(fragment, 512, nullptr, infoLog);
         std::cerr << "ERREUR::SHADER::FRAGMENT::COMPILATION_ECHOUEE\n" << infoLog << std::endl;
     }
 
@@ -204,7 +216,7 @@ GLuint Renderer::loadShaders(const char* vertex_path, const char* fragment_path)
     glLinkProgram(ID);
     glGetProgramiv(ID, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(ID, 512, NULL, infoLog);
+        glGetProgramInfoLog(ID, 512, nullptr, infoLog);
         std::cerr << "ERREUR::SHADER::PROGRAMME::LIAISON_ECHOUEE\n" << infoLog << std::endl;
     }
 
@@ -214,3 +226,25 @@ GLuint Renderer::loadShaders(const char* vertex_path, const char* fragment_path)
 
     return ID;
 }
+
+
+void Renderer::renderText(const std::string &text, float x, float y, float scale, glm::vec3 color) {
+
+    char buffer[1024*16]; // ~500 chars
+    int num_quads = stb_easy_font_print(0,0, const_cast<char*>(text.c_str()), nullptr, buffer, sizeof(buffer));
+    glColor3f(color.r, color.g, color.b);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(x, y + stb_easy_font_height(const_cast<char *>(text.c_str())) * scale, 0.0f);
+    glScalef(scale, scale, 1.0f);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 16, buffer);
+    glDrawArrays(GL_QUADS, 0, num_quads * 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+

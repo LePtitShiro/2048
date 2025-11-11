@@ -63,15 +63,19 @@ void App::onKey(int key, int action) {
             break;
         case GLFW_KEY_LEFT:
             game->move(Direction::LEFT);
+            printf("%d\n",game->getScore());
             break;
         case GLFW_KEY_RIGHT:
             game->move(Direction::RIGHT);
+            printf("%d\n",game->getScore());
             break;
         case GLFW_KEY_UP:
             game->move(Direction::UP);
+            printf("%d\n",game->getScore());
             break;
         case GLFW_KEY_DOWN:
             game->move(Direction::DOWN);
+            printf("%d\n",game->getScore());
             break;
         default:
             break;

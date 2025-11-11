@@ -13,11 +13,11 @@ class Game {
 public:
     Game();
     ~Game();
-    int getScore();
-    int getBestScore();
+    int getScore() const;
+    int getBestScore() const;
     void setScore(int score);
     void setBestScore(int bestScore);
-    const Board& getBoard();
+    const Board& getBoard() const;
     void move(Direction direction);
 private:
     int score;
@@ -27,7 +27,7 @@ private:
     void moveRight();
     void moveDown();
     void moveUp();
-    void updateScore();
+    void updateScore(int value);
     void updateBestScore();
 };
 
