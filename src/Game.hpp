@@ -17,7 +17,7 @@ public:
     int getBestScore();
     void setScore(int score);
     void setBestScore(int bestScore);
-    Board getBoard();
+    const Board& getBoard();
     void move(Direction direction);
 private:
     int score;

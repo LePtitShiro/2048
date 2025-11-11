@@ -5,14 +5,24 @@
 #ifndef C_PROJETS_RENDERER_HPP
 #define C_PROJETS_RENDERER_HPP
 #include "Board.hpp"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Renderer {
 public:
-    Renderer(int wight,int height);
+    Renderer(int width,int height);
     ~Renderer();
-    void render(Board board, int score, int bestScore);
+    void render(const Board& board, int score, int bestScore);
+    void clearScreen(const Board& board);
+    bool init();
 private:
     int width,height;
+    GLuint VAO,VBO;
+    GLuint shaderP;
+    GLuint loadShaders(const char* vertex_path, const char* fragment_path);
 };
 
 

@@ -38,7 +38,7 @@ void Game::moveDown() {this->board->make_action(Direction::DOWN);}
 void Game::moveLeft() {this->board->make_action(Direction::LEFT);}
 void Game::moveRight() {this->board->make_action(Direction::RIGHT);}
 void Game::moveUp() {this->board->make_action(Direction::UP);}
-Board Game::getBoard() {return *this->board;}
+const Board& Game::getBoard() {return *this->board;}
 int Game::getBestScore() {return this->bestScore;}
 int Game::getScore() {return this->score;}
 void Game::setScore(int score) {this->score = score;}

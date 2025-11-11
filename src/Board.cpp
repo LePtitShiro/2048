@@ -153,13 +153,10 @@ void Board::make_action(Direction dir) {
         default :
             break;
     }
-    int nb_remaining_cells = countEmpty();
-    if (nb_remaining_cells >= 2) {
-        add_new_cell();
-        add_new_cell();
-    }else if (nb_remaining_cells == 1) {
+    if (countEmpty() >= 1) {
         add_new_cell();
     }
+
 
 }
 
@@ -174,8 +171,8 @@ void Board::make_action(Direction dir) {
  *
  */
 Board::~Board() {
-    for (int i = 0; i < rows; i++) this->grid[i] = nullptr; // chaque
-    this->grid = nullptr;
+    for (int i = 0; i < rows; i++) delete[] this->grid[i]; // chaque
+    delete[] this->grid;
 }
 
 
